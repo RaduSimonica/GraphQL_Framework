@@ -1,0 +1,71 @@
+package mutationTests;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.pojo.GraphQLResponse;
+import ro.crownstudio.api.pojo.Skill;
+import ro.crownstudio.core.BaseClass;
+
+import java.sql.Date;
+import java.time.Instant;
+import java.util.UUID;
+
+public class TestUpdateSkill extends BaseClass {
+
+    @Test
+    public void testUpdateSkill() {
+        UUID uuid = UUID.randomUUID();
+
+        GraphQLResponse createdSkillResponse = client.sendRequest(
+                Mutation.SKILL_CREATE_ONE.getQuery("Created Test Skill " + uuid)
+        );
+        Skill createdSkill = responseProcessor.assertAndReturn(createdSkillResponse, Skill.class);
+
+        GraphQLResponse updatedSkillResponse = client.sendRequest(
+                Mutation.SKILL_UPDATE_ONE.getQuery(createdSkill.getId(), "Updated Test Skill " + uuid)
+        );
+        Skill updatedSkill = responseProcessor.assertAndReturn(updatedSkillResponse, Skill.class);
+
+        GraphQLResponse refreshedSkillResponse = client.sendRequest(
+                Query.SKILL_FIND_ONE.getQuery(createdSkill.getId())
+        );
+        Skill refreshedSkill = responseProcessor.assertAndReturn(refreshedSkillResponse, Skill.class);
+
+        Assert.assertEquals(
+                updatedSkill.getCreatedAt(),
+                createdSkill.getCreatedAt(),
+                "Creation date changed after update"
+        );
+        Assert.assertNull(
+                updatedSkill.getDeletedAt(),
+                "Role has deleted date after update"
+        );
+        Assert.assertEquals(
+                updatedSkill.getId(),
+                createdSkill.getId(),
+                "Role id changed after update"
+        );
+        Assert.assertEquals(
+                updatedSkill.getName(),
+                "Updated Test Skill " + uuid,
+                "Skill name did not change after update"
+        );
+        Assert.assertTrue(
+                updatedSkill.getUpdatedAt().before(Date.from(Instant.now())),
+                "Skill updated date is not before now"
+        );
+        Assert.assertTrue(
+                updatedSkill.getUpdatedAt().after(updatedSkill.getCreatedAt()),
+                "Skill updated date is not after created date"
+        );
+
+        // Bonus: Check if getting the role by ID after update, equals the role provided by the update mutation
+        Assert.assertEquals(
+                refreshedSkill,
+                updatedSkill,
+                "Role after update does not match role provided by update mutation"
+        );
+    }
+}
