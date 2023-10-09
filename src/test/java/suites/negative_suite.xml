@@ -1,13 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Regression Suite" parallel="methods" thread-count="10">
-    <test name="Query Tests">
-        <classes>
-            <class name="queryTests.TestGetAllRoles"/>
-            <class name="queryTests.TestGetRole"/>
-            <class name="queryTests.TestGetAllSkills"/>
-            <class name="queryTests.TestGetSkill"/>
-        </classes>
-    </test>
+<suite name="Negative Suite" parallel="methods" thread-count="10">
     <test name="Negative Query Tests">
         <classes>
             <class name="queryTests.negative.TestGetSingleDeletedRole"/>
@@ -18,17 +10,6 @@
             <class name="queryTests.negative.TestGetSingleSkillNegativeId"/>
             <class name="queryTests.negative.TestGetSingleSkillNonExistentId"/>
             <class name="queryTests.negative.TestGetSingleSkillZeroId"/>
-        </classes>
-    </test>
-    <test name="Mutation Tests">
-        <classes>
-            <class name="mutationTests.TestCreateRole"/>
-            <class name="mutationTests.TestUpdateRole"/>
-            <class name="mutationTests.TestDeleteRole"/>
-            <class name="mutationTests.TestCreateSkill"/>
-            <class name="mutationTests.TestUpdateSkill"/>
-            <class name="mutationTests.TestDeleteSkill"/>
-            <class name="mutationTests.TestAssignSkills"/>
         </classes>
     </test>
     <test name="Negative Mutation Tests">
