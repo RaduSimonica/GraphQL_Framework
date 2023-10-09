@@ -8,9 +8,10 @@ import org.testng.annotations.Test;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.ResponseProcessor;
+import unitTests.BaseUnitTestClass;
 
 
-public class ResponseProcessorTest {
+public class ResponseProcessorTest extends BaseUnitTestClass {
 
     private Gson gson;
     private ResponseProcessor responseProcessor;

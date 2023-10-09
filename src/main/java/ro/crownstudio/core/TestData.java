@@ -19,8 +19,8 @@ public class TestData {
 
     private static TestData INSTANCE;
 
-    private final ApiClient client;
-    private final ResponseProcessor responseProcessor;
+    @Getter
+    private final TestDataHelper helper;
 
     @Getter
     private final List<Skill> testSkills;
@@ -29,14 +29,16 @@ public class TestData {
 
     private TestData() {
         Gson gson = new Gson();
-        client = new ApiClient(new OkHttpClient(), gson);
-        responseProcessor = new ResponseProcessor(gson);
+        ApiClient client = new ApiClient(new OkHttpClient(), gson);
+        ResponseProcessor responseProcessor = new ResponseProcessor(gson);
+
+        helper = new TestDataHelper(client, responseProcessor);
 
         testSkills = new ArrayList<>();
-        testSkills.addAll(createTestSkills(4));
+        testSkills.addAll(helper.createTestSkills(4));
         testRoles = new ArrayList<>();
-        List<Role> tempRoles = createTestRoles(3);
-        testRoles.addAll(assignSkillsToRoles(tempRoles));
+        List<Role> tempRoles = helper.createTestRoles(3);
+        testRoles.addAll(helper.assignSkillsToRoles(tempRoles, testSkills));
     }
 
     public static TestData getInstance() {
@@ -44,64 +46,5 @@ public class TestData {
             INSTANCE = new TestData();
         }
         return INSTANCE;
-    }
-
-    public Role createTestRole(String roleName) {
-        GraphQLResponse response = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
-        );
-        return responseProcessor.assertAndReturn(response, Role.class);
-    }
-
-    public Skill createTestSkill(String skillName) {
-        GraphQLResponse response = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
-        );
-        return responseProcessor.assertAndReturn(response, Skill.class);
-    }
-
-    private List<Role> createTestRoles(int numberOfRoles) {
-        List<Role> roles = new ArrayList<>();
-        for (int i = 0; i < numberOfRoles; i++) {
-            roles.add(createTestRole("Test Role " + UUID.randomUUID()));
-        }
-        return roles;
-    }
-
-    private List<Skill> createTestSkills(int NumberOfSkills) {
-        List<Skill> skills = new ArrayList<>();
-        for (int i = 0; i < NumberOfSkills; i++) {
-            skills.add(createTestSkill("Test Skill " + UUID.randomUUID()));
-        }
-        return skills;
-    }
-
-    private List<Role> assignSkillsToRoles(List<Role> roles) {
-        for (Role role : roles) {
-            List<Asd> roleSkills = new ArrayList<>();
-            if (testSkills.size() < 1) {
-                break;
-            }
-            float weight = (float) (1.0 / testSkills.size());
-            for (Skill skill : testSkills) {
-                roleSkills.add(new Asd(weight, skill.getId()));
-            }
-            GraphQLResponse response = client.sendRequest(
-                    Mutation.ROLE_SKILLS_OVERWRITE.getQuery(role.getId(), roleSkills)
-            );
-            Assert.assertNull(response.getError(), "Cannot assign skills to role");
-        }
-        return refreshRoles(roles);
-    }
-
-    private List<Role> refreshRoles(List<Role> roles) {
-        List<Role> refreshedRoles = new ArrayList<>();
-        for (Role role : roles) {
-            GraphQLResponse response = client.sendRequest(
-                    Query.ROLE_FIND_ONE.getQuery(role.getId())
-            );
-            refreshedRoles.add(responseProcessor.assertAndReturn(response, Role.class));
-        }
-        return refreshedRoles;
     }
 }

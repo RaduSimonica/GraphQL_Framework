@@ -13,7 +13,7 @@ public class MainConfig {
     private static final Logger LOGGER = LogManager.getLogger(MainConfig.class);
     private static MainConfig INSTANCE;
 
-    private Properties properties;
+    private final Properties properties;
 
     @Getter
     private String apiUrl;

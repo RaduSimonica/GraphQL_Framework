@@ -18,7 +18,6 @@ Then go to: http://localhost:5050/allure-docker-service/projects/default/reports
 - Write documentation
 - Store each and every created role or skill ID in a local JSON then create an independent script that performs a cleanup after all tests are done, just in case of catastrophic failure.
 - Polish the code
-- Add more unit-tests
 
 
 - *Bonus*: If time permits, refactor Query and Mutation enum into a Factory for better scalability

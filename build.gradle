@@ -34,5 +34,8 @@ test {
         if (project.hasProperty('suiteName')) {
             suites('src/test/java/suites/' + project.property('suiteName'))
         }
+        if (project.hasProperty('unitTest')) {
+            suites('src/test/java/unitTests/unit_suite.xml')
+        }
     }
 }

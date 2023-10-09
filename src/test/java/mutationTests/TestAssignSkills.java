@@ -25,7 +25,7 @@ public class TestAssignSkills extends BaseClass {
         // Ensure there are enough test skills for the current test
         while (testData.getTestSkills().size() < SKILLS_TO_ASSIGN) {
             testData.getTestSkills()
-                    .add(testData.createTestSkill("Test Skill " + UUID.randomUUID()));
+                    .add(testData.getHelper().createTestSkill("Test Skill " + UUID.randomUUID()));
         }
 
         assignedSkills = testData.getTestSkills()

@@ -13,13 +13,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.core.ApiClient;
+import unitTests.BaseUnitTestClass;
 
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class ApiClientTest {
+public class ApiClientTest extends BaseUnitTestClass {
 
     @Mock
     private OkHttpClient httpClient;
