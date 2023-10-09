@@ -1,9 +1,7 @@
 package ro.crownstudio.api.pojo;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import lombok.*;
-
 
 import java.util.Date;
 import java.util.Objects;

@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Smoke Suite">
+    <test name="Query Tests">
+        <classes>
+            <class name="queryTests.TestGetAllRoles"/>
+            <class name="queryTests.TestGetRole"/>
+            <class name="queryTests.TestGetAllSkills"/>
+            <class name="queryTests.TestGetSkill"/>
+        </classes>
+    </test>
+    <test name="Mutation Tests">
+        <classes>
+            <class name="mutationTests.TestCreateRole"/>
+            <class name="mutationTests.TestCreateSkill"/>
+            <class name="mutationTests.TestAssignSkills"/>
+        </classes>
+    </test>
+</suite>

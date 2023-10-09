@@ -26,6 +26,9 @@ replay_pid*
 # Gradle folders
 .gradle/
 .out/
+.allure-reports/
+.allure-results/
+.tmp-results/
 
 # Idea folders
 .idea/

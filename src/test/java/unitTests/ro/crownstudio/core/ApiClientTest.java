@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.core.ApiClient;
 
-
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
