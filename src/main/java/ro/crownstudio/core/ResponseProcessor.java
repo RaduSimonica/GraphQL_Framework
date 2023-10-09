@@ -19,7 +19,7 @@ public class ResponseProcessor {
         if (response.getError() != null) {
             Assert.assertTrue(
                     response.getError().isEmpty(),
-                    "Found the following errors:\n" + new Gson().toJson(response.getError())
+                    "Found the following errors:\n" + response.getError()
             );
         }
         LinkedTreeMap<?, ?> data = response.getData();

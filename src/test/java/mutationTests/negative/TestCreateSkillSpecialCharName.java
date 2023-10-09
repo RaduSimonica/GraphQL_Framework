@@ -1,4 +1,4 @@
-package mutationTests;
+package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -12,11 +12,11 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
 
-public class TestCreateSkill extends BaseClass {
+public class TestCreateSkillSpecialCharName extends BaseClass {
 
     @Test
-    public void testCreateSkill() {
-        String skillName = "Created Test Skill " + UUID.randomUUID();
+    public void testCreateSkillSpecialCharName() {
+        String skillName = "ЊѼҊ߮ " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
                 Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );

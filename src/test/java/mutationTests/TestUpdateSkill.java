@@ -16,15 +16,16 @@ public class TestUpdateSkill extends BaseClass {
 
     @Test
     public void testUpdateSkill() {
-        UUID uuid = UUID.randomUUID();
+        String skillName = "Created Test Skill " + UUID.randomUUID();
+        String updatedSkillname = "Updated Test Skill " + UUID.randomUUID();
 
         GraphQLResponse createdSkillResponse = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery("Created Test Skill " + uuid)
+                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );
         Skill createdSkill = responseProcessor.assertAndReturn(createdSkillResponse, Skill.class);
 
         GraphQLResponse updatedSkillResponse = client.sendRequest(
-                Mutation.SKILL_UPDATE_ONE.getQuery(createdSkill.getId(), "Updated Test Skill " + uuid)
+                Mutation.SKILL_UPDATE_ONE.getQuery(createdSkill.getId(), updatedSkillname)
         );
         Skill updatedSkill = responseProcessor.assertAndReturn(updatedSkillResponse, Skill.class);
 
@@ -49,7 +50,7 @@ public class TestUpdateSkill extends BaseClass {
         );
         Assert.assertEquals(
                 updatedSkill.getName(),
-                "Updated Test Skill " + uuid,
+                updatedSkillname,
                 "Skill name did not change after update"
         );
         Assert.assertTrue(
@@ -61,11 +62,11 @@ public class TestUpdateSkill extends BaseClass {
                 "Skill updated date is not after created date"
         );
 
-        // Bonus: Check if getting the role by ID after update, equals the role provided by the update mutation
+        // Bonus: Check if getting the skull by ID after update, equals the skull provided by the update mutation
         Assert.assertEquals(
                 refreshedSkill,
                 updatedSkill,
-                "Role after update does not match role provided by update mutation"
+                "Skill after update does not match skill provided by update mutation"
         );
     }
 }

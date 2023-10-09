@@ -1,4 +1,4 @@
-package mutationTests;
+package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -11,11 +11,11 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
 
-public class TestCreateRole extends BaseClass {
+public class TestCreateRoleNumericName extends BaseClass {
 
     @Test
-    public void testCreateRole() {
-        String roleName = "Created Test Role " + UUID.randomUUID();
+    public void testCreateRoleNumericName() {
+        String roleName = "1234567890 " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
                 Mutation.ROLE_CREATE_ONE.getQuery(roleName)
         );

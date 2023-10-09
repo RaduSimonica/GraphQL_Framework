@@ -1,19 +1,16 @@
-package mutationTests;
+package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
 import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
 
-import java.sql.Date;
-import java.time.Instant;
 import java.util.UUID;
 
-public class TestDeleteRole extends BaseClass {
+public class TestDeleteRoleTwice extends BaseClass {
 
     @Test
     public void testDeleteRole() {
@@ -31,6 +28,17 @@ public class TestDeleteRole extends BaseClass {
         Assert.assertEquals(
                 deleteResult.getAffected(),
                 1,
+                "Affected entities after deletion does not match the expected one"
+        );
+
+        GraphQLResponse deleteRoleSecondResponse = client.sendRequest(
+                Mutation.ROLE_DELETE_ONE.getQuery(createdRole.getId())
+        );
+        DeleteResult deleteSecondResult = responseProcessor.assertAndReturn(deleteRoleSecondResponse, DeleteResult.class);
+
+        Assert.assertEquals(
+                deleteSecondResult.getAffected(),
+                0,
                 "Affected entities after deletion does not match the expected one"
         );
     }

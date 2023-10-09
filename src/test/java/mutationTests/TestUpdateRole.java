@@ -10,18 +10,22 @@ import ro.crownstudio.core.BaseClass;
 
 import java.sql.Date;
 import java.time.Instant;
+import java.util.UUID;
 
 public class TestUpdateRole extends BaseClass {
 
     @Test
     public void testUpdateRole() {
+        String roleName = "Created Test Role " + UUID.randomUUID();
+        String updatedRoleName = "Updated Test Role " + UUID.randomUUID();
+
         GraphQLResponse createdRoleResponse = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery("Created Test Role")
+                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
         );
         Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
 
         GraphQLResponse updatedRoleResponse = client.sendRequest(
-                Mutation.ROLE_UPDATE_ONE.getQuery(createdRole.getId(), "Updated Test Role")
+                Mutation.ROLE_UPDATE_ONE.getQuery(createdRole.getId(), updatedRoleName)
         );
         Role updatedRole = responseProcessor.assertAndReturn(updatedRoleResponse, Role.class);
 
@@ -46,7 +50,7 @@ public class TestUpdateRole extends BaseClass {
         );
         Assert.assertEquals(
                 updatedRole.getName(),
-                "Updated Test Role",
+                updatedRoleName,
                 "Role name did not change after update"
         );
         Assert.assertTrue(

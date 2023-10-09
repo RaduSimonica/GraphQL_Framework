@@ -41,13 +41,18 @@ public enum Mutation {
                         RoleSkillsOverwrite(roleId: %s, skills: %s) {
                             createdAt
                             deletedAt
-                            roleId
                             id
+                            roleId
                             skill {
+                                createdAt
+                                deletedAt
                                 id
                                 name
+                                updatedAt
                             }
+                            skillId
                             updatedAt
+                            weight
                         }
                     }
                     """,

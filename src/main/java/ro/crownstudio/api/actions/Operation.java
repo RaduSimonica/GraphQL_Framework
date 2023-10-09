@@ -2,7 +2,9 @@ package ro.crownstudio.api.actions;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 
+@Getter
 public class Operation {
 
     @SerializedName("query")

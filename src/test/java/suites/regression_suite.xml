@@ -8,6 +8,18 @@
             <class name="queryTests.TestGetSkill"/>
         </classes>
     </test>
+    <test name="Negative Query Tests">
+        <classes>
+            <class name="queryTests.negative.TestGetSingleDeletedRole"/>
+            <class name="queryTests.negative.TestGetSingleRoleNegativeId"/>
+            <class name="queryTests.negative.TestGetSingleRoleNonExistentId"/>
+            <class name="queryTests.negative.TestGetSingleRoleZeroId"/>
+            <class name="queryTests.negative.TestGetSingleDeletedSkill"/>
+            <class name="queryTests.negative.TestGetSingleSkillNegativeId"/>
+            <class name="queryTests.negative.TestGetSingleSkillNonExistentId"/>
+            <class name="queryTests.negative.TestGetSingleSkillZeroId"/>
+        </classes>
+    </test>
     <test name="Mutation Tests">
         <classes>
             <class name="mutationTests.TestCreateRole"/>
@@ -16,6 +28,19 @@
             <class name="mutationTests.TestCreateSkill"/>
             <class name="mutationTests.TestUpdateSkill"/>
             <class name="mutationTests.TestDeleteSkill"/>
+            <class name="mutationTests.TestAssignSkills"/>
+        </classes>
+    </test>
+    <test name="Negative Mutation Tests">
+        <classes>
+            <class name="mutationTests.negative.TestCreateRoleEmptyName"/>
+            <class name="mutationTests.negative.TestCreateRoleNumericName"/>
+            <class name="mutationTests.negative.TestCreateRoleSpecialCharName"/>
+            <class name="mutationTests.negative.TestCreateDuplicateRole"/>
+            <class name="mutationTests.negative.TestCreateSkillEmptyName"/>
+            <class name="mutationTests.negative.TestCreateSkillNumericName"/>
+            <class name="mutationTests.negative.TestCreateSkillSpecialCharName"/>
+            <class name="mutationTests.negative.TestCreateDuplicateSkill"/>
         </classes>
     </test>
 </suite>

@@ -32,9 +32,11 @@ public class TestData {
         client = new ApiClient(new OkHttpClient(), gson);
         responseProcessor = new ResponseProcessor(gson);
 
+        testSkills = new ArrayList<>();
+        testSkills.addAll(createTestSkills(4));
+        testRoles = new ArrayList<>();
         List<Role> tempRoles = createTestRoles(3);
-        testSkills = createTestSkills(4);
-        testRoles = assignSkillsToRoles(tempRoles);
+        testRoles.addAll(assignSkillsToRoles(tempRoles));
     }
 
     public static TestData getInstance() {
@@ -44,13 +46,24 @@ public class TestData {
         return INSTANCE;
     }
 
+    public Role createTestRole(String roleName) {
+        GraphQLResponse response = client.sendRequest(
+                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+        );
+        return responseProcessor.assertAndReturn(response, Role.class);
+    }
+
+    public Skill createTestSkill(String skillName) {
+        GraphQLResponse response = client.sendRequest(
+                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+        );
+        return responseProcessor.assertAndReturn(response, Skill.class);
+    }
+
     private List<Role> createTestRoles(int numberOfRoles) {
         List<Role> roles = new ArrayList<>();
         for (int i = 0; i < numberOfRoles; i++) {
-            GraphQLResponse response = client.sendRequest(
-                    Mutation.ROLE_CREATE_ONE.getQuery("Test Role " + UUID.randomUUID())
-            );
-            roles.add(responseProcessor.assertAndReturn(response, Role.class));
+            roles.add(createTestRole("Test Role " + UUID.randomUUID()));
         }
         return roles;
     }
@@ -58,10 +71,7 @@ public class TestData {
     private List<Skill> createTestSkills(int NumberOfSkills) {
         List<Skill> skills = new ArrayList<>();
         for (int i = 0; i < NumberOfSkills; i++) {
-            GraphQLResponse response = client.sendRequest(
-                    Mutation.SKILL_CREATE_ONE.getQuery("Test Skill " + UUID.randomUUID())
-            );
-            skills.add(responseProcessor.assertAndReturn(response, Skill.class));
+            skills.add(createTestSkill("Test Skill " + UUID.randomUUID()));
         }
         return skills;
     }
