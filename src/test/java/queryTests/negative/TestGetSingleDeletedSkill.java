@@ -8,6 +8,7 @@ import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.util.UUID;
 
@@ -23,12 +24,17 @@ public class TestGetSingleDeletedSkill extends BaseClass {
                 Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
+        TestLogger.info("Created Skill with id: {}", createdSkill.getId());
 
         GraphQLResponse deleteSkillResponse = client.sendRequest(
                 Mutation.SKILL_DELETE_ONE.getQuery(createdSkill.getId())
         );
         DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteSkillResponse, DeleteResult.class);
-
+        TestLogger.info(
+                "Deleted Skill with id: {}. Entities affected: {}",
+                createdSkill.getId(),
+                deleteResult.getAffected()
+        );
         Assert.assertEquals(deleteResult.getAffected(), 1);
 
         GraphQLResponse getResponse = client.sendRequest(
@@ -36,10 +42,15 @@ public class TestGetSingleDeletedSkill extends BaseClass {
         );
 
         Skill skillAfterDeletion = responseProcessor.assertAndReturn(getResponse, Skill.class);
-
+        TestLogger.info(
+                "Tried to get deleted skill with id: {}. Result is: {}",
+                createdSkill.getId(),
+                skillAfterDeletion
+        );
         Assert.assertNull(
                 skillAfterDeletion,
                 "Skill found after deletion"
         );
+        TestLogger.info("Test passed!");
     }
 }

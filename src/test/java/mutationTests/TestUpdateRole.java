@@ -7,6 +7,7 @@ import ro.crownstudio.api.actions.Query;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -23,11 +24,13 @@ public class TestUpdateRole extends BaseClass {
                 Mutation.ROLE_CREATE_ONE.getQuery(roleName)
         );
         Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
+        TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());
 
         GraphQLResponse updatedRoleResponse = client.sendRequest(
                 Mutation.ROLE_UPDATE_ONE.getQuery(createdRole.getId(), updatedRoleName)
         );
         Role updatedRole = responseProcessor.assertAndReturn(updatedRoleResponse, Role.class);
+        TestLogger.info("Updated role with id: {}. New name is {}", createdRole.getId(), updatedRole.getName());
 
         GraphQLResponse refreshedRoleResponse = client.sendRequest(
                 Query.ROLE_FIND_ONE.getQuery(createdRole.getId())
@@ -72,5 +75,7 @@ public class TestUpdateRole extends BaseClass {
                 updatedRole,
                 "Role after update does not match role provided by update mutation"
         );
+
+        TestLogger.info("Test passed!");
     }
 }

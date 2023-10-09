@@ -4,8 +4,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.actions.Mutation;
 import ro.crownstudio.api.pojo.GraphQLResponse;
-import ro.crownstudio.api.pojo.Role;
+import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 public class TestCreateSkillEmptyName extends BaseClass {
 
@@ -15,12 +16,15 @@ public class TestCreateSkillEmptyName extends BaseClass {
         GraphQLResponse response = client.sendRequest(
                 Mutation.SKILL_CREATE_ONE.getQuery(skillname)
         );
-        Role createdSkill = responseProcessor.assertAndReturn(response, Role.class);
+        Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
+        TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());
 
         Assert.assertNotEquals(
                 createdSkill.getName(),
                 skillname,
                 "Skill was created with empty name"
         );
+
+        TestLogger.info("Test passed!");
     }
 }

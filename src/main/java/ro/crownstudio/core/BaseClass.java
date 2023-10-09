@@ -3,8 +3,6 @@ package ro.crownstudio.core;
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -14,7 +12,6 @@ import java.io.IOException;
 
 public class BaseClass {
 
-    private static final Logger LOGGER = LogManager.getLogger(ApiClient.class);
     private final File TEMP_RESULTS = new File("tmp-results");
 
     protected TestData testData;
@@ -26,7 +23,7 @@ public class BaseClass {
         try {
             FileUtils.deleteDirectory(TEMP_RESULTS);
         } catch (IOException e) {
-            LOGGER.error("Failed to delete %s results directory.", e);
+            TestLogger.error("Failed to delete %s results directory.", e);
         }
     }
 
@@ -39,7 +36,7 @@ public class BaseClass {
                 try {
                     FileUtils.copyFileToDirectory(result, allureResultsDir);
                 } catch (IOException e) {
-                    LOGGER.error("Failed to copy result file: " + result);
+                    TestLogger.error("Failed to copy result file: " + result);
                 }
             }
         }

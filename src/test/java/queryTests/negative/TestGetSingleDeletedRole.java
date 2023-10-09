@@ -8,6 +8,7 @@ import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.util.UUID;
 
@@ -22,24 +23,35 @@ public class TestGetSingleDeletedRole extends BaseClass {
         GraphQLResponse response = client.sendRequest(
                 Mutation.ROLE_CREATE_ONE.getQuery(roleName)
         );
-        Role createdRoleName = responseProcessor.assertAndReturn(response, Role.class);
+        Role createdRole = responseProcessor.assertAndReturn(response, Role.class);
+        TestLogger.info("Created role with ID: {}", createdRole.getId());
 
         GraphQLResponse deleteRoleResponse = client.sendRequest(
-                Mutation.ROLE_DELETE_ONE.getQuery(createdRoleName.getId())
+                Mutation.ROLE_DELETE_ONE.getQuery(createdRole.getId())
         );
         DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteRoleResponse, DeleteResult.class);
-
+        TestLogger.info(
+                "Deleted role with ID: {}. Entities affected: {}",
+                createdRole.getId(),
+                deleteResult.getAffected()
+        );
         Assert.assertEquals(deleteResult.getAffected(), 1);
 
         GraphQLResponse getResponse = client.sendRequest(
-                Query.ROLE_FIND_ONE.getQuery(createdRoleName.getId())
+                Query.ROLE_FIND_ONE.getQuery(createdRole.getId())
         );
 
         Role roleAfterDeletion = responseProcessor.assertAndReturn(getResponse, Role.class);
+        TestLogger.info("Tried to delete role with ID: {} again. Entities affected: {}",
+                createdRole.getId(),
+                deleteResult.getAffected()
+        );
 
         Assert.assertNull(
                 roleAfterDeletion,
                 "Role found after deletion"
         );
+
+        TestLogger.info("Test passed!");
     }
 }

@@ -3,17 +3,11 @@ package ro.crownstudio.core;
 import com.google.gson.Gson;
 import lombok.Getter;
 import okhttp3.OkHttpClient;
-import org.testng.Assert;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
-import ro.crownstudio.api.pojo.Asd;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.api.pojo.Skill;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class TestData {
 

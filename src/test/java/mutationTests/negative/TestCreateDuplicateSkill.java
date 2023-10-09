@@ -6,6 +6,7 @@ import ro.crownstudio.api.actions.Mutation;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.util.UUID;
 
@@ -18,6 +19,11 @@ public class TestCreateDuplicateSkill extends BaseClass {
                 Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response1, Skill.class);
+        TestLogger.info(
+                "Created skill named {} with id: {}",
+                createdSkill.getName(),
+                createdSkill.getId()
+        );
 
         Assert.assertNotNull(
                 createdSkill,
@@ -28,6 +34,8 @@ public class TestCreateDuplicateSkill extends BaseClass {
         GraphQLResponse response2 = client.sendRequest(
                 Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );
+        TestLogger.info("Tried to create the same skill again.");
+
         Assert.assertNotNull(
                 response2.getError(),
                 "No error was return while trying to create a duplicate skill"
@@ -42,5 +50,6 @@ public class TestCreateDuplicateSkill extends BaseClass {
                 response2.getError().get(0).getMessage(),
                 "Cannot create two skills with the same name."
         );
+        TestLogger.info("Test passed!");
     }
 }

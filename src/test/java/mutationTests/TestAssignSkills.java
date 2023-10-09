@@ -1,11 +1,12 @@
 package mutationTests;
 
+import org.apache.logging.log4j.Level;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.actions.Mutation;
 import ro.crownstudio.api.pojo.*;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -18,34 +19,39 @@ import java.util.UUID;
 public class TestAssignSkills extends BaseClass {
 
     private static final int SKILLS_TO_ASSIGN = 3;
-    private List<Skill> assignedSkills;
 
-    @BeforeMethod
-    private void testSetup() {
-        // Ensure there are enough test skills for the current test
+    @Test
+    public void testAssignSkills() {
+
         while (testData.getTestSkills().size() < SKILLS_TO_ASSIGN) {
+            TestLogger.log(Level.DEBUG, "Added one more skill.");
             testData.getTestSkills()
                     .add(testData.getHelper().createTestSkill("Test Skill " + UUID.randomUUID()));
         }
 
-        assignedSkills = testData.getTestSkills()
+        List<Skill> assignedSkills = testData.getTestSkills()
                 .stream()
                 .limit(SKILLS_TO_ASSIGN)
                 .toList();
-    }
+        TestLogger.log(Level.DEBUG, "Created a list of {} assigned skills", assignedSkills.size());
 
-    @Test
-    public void testAssignSkills() {
         String roleName = "Created Test Role " + UUID.randomUUID();
         GraphQLResponse createdRoleResponse = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery("Created Test Role")
+                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
         );
         Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
+        TestLogger.log(
+                Level.INFO,
+                "Created role named: {} with id: {}",
+                createdRole.getName(),
+                createdRole.getId()
+        );
 
         List<Asd> roleSkillsAssigned = new ArrayList<>();
         roleSkillsAssigned.add(new Asd(0.3f, assignedSkills.get(0).getId()));
         roleSkillsAssigned.add(new Asd(0.5f, assignedSkills.get(1).getId()));
         roleSkillsAssigned.add(new Asd(0.2f, assignedSkills.get(2).getId()));
+        TestLogger.log(Level.INFO, "Created ASD object. Wights and ids: {}", roleSkillsAssigned);
 
         GraphQLResponse assignResponse = client.sendRequest(
                 Mutation.ROLE_SKILLS_OVERWRITE.getQuery(createdRole.getId(), roleSkillsAssigned)
@@ -53,8 +59,10 @@ public class TestAssignSkills extends BaseClass {
         List<RoleSkill> actualRoleSkills = Arrays.asList(
                 responseProcessor.assertAndReturn(assignResponse, RoleSkill[].class)
         );
+        TestLogger.log(Level.INFO, "Assigned {} skills to role id: {}", actualRoleSkills.size(), createdRole.getId());
 
         for (RoleSkill roleSkill : actualRoleSkills) {
+            TestLogger.log(Level.INFO, "Checking role skill: {}", roleSkill.getSkillId());
             Assert.assertTrue(
                     roleSkill.getCreatedAt().before(Date.from(Instant.now())),
                     "RoleSkill has creation date later than now"
@@ -86,5 +94,7 @@ public class TestAssignSkills extends BaseClass {
                     "Weight and skill ID does not match the expected"
             );
         }
+
+        TestLogger.log(Level.INFO, "Test passed!");
     }
 }

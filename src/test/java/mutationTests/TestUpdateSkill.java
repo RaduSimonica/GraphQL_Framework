@@ -7,6 +7,7 @@ import ro.crownstudio.api.actions.Query;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -23,11 +24,13 @@ public class TestUpdateSkill extends BaseClass {
                 Mutation.SKILL_CREATE_ONE.getQuery(skillName)
         );
         Skill createdSkill = responseProcessor.assertAndReturn(createdSkillResponse, Skill.class);
+        TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());
 
         GraphQLResponse updatedSkillResponse = client.sendRequest(
                 Mutation.SKILL_UPDATE_ONE.getQuery(createdSkill.getId(), updatedSkillname)
         );
         Skill updatedSkill = responseProcessor.assertAndReturn(updatedSkillResponse, Skill.class);
+        TestLogger.info("Updated skill id: {}. New name is: {}", createdSkill.getId(), updatedSkill.getName());
 
         GraphQLResponse refreshedSkillResponse = client.sendRequest(
                 Query.SKILL_FIND_ONE.getQuery(createdSkill.getId())
@@ -68,5 +71,7 @@ public class TestUpdateSkill extends BaseClass {
                 updatedSkill,
                 "Skill after update does not match skill provided by update mutation"
         );
+
+        TestLogger.info("Test passed!");
     }
 }

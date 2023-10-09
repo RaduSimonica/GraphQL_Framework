@@ -6,6 +6,7 @@ import ro.crownstudio.api.actions.Query;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
+import ro.crownstudio.core.TestLogger;
 
 public class TestGetSingleSkillNonExistentId extends BaseClass {
 
@@ -13,7 +14,10 @@ public class TestGetSingleSkillNonExistentId extends BaseClass {
     public void testGetSingleSkillNonExistentId() {
         GraphQLResponse graphQLResponse = client.sendRequest(Query.SKILL_FIND_ONE.getQuery(Integer.MAX_VALUE));
         Skill actualSkill = responseProcessor.assertAndReturn(graphQLResponse, Skill.class);
+        TestLogger.info("Tried to get skill with id: {}. Result is: {}", Integer.MAX_VALUE, actualSkill);
 
         Assert.assertNull(actualSkill, "Found a Skill with Id " + Integer.MAX_VALUE);
+
+        TestLogger.info("Test passed!");
     }
 }

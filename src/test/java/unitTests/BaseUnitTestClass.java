@@ -1,18 +1,15 @@
 package unitTests;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import ro.crownstudio.core.ApiClient;
+import ro.crownstudio.core.TestLogger;
 
 import java.io.File;
 import java.io.IOException;
 
 public class BaseUnitTestClass {
 
-    private static final Logger LOGGER = LogManager.getLogger(ApiClient.class);
     private final File TEMP_RESULTS = new File("tmp-results");
 
     @BeforeSuite
@@ -20,7 +17,7 @@ public class BaseUnitTestClass {
         try {
             FileUtils.deleteDirectory(TEMP_RESULTS);
         } catch (IOException e) {
-            LOGGER.error("Failed to delete %s results directory.", e);
+            TestLogger.error("Failed to delete %s results directory.");
         }
     }
 
@@ -33,7 +30,7 @@ public class BaseUnitTestClass {
                 try {
                     FileUtils.copyFileToDirectory(result, allureResultsDir);
                 } catch (IOException e) {
-                    LOGGER.error("Failed to copy result file: " + result);
+                    TestLogger.error("Failed to copy result file: " + result);
                 }
             }
         }

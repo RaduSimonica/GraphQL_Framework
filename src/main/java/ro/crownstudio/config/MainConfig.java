@@ -1,8 +1,7 @@
 package ro.crownstudio.config;
 
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import ro.crownstudio.core.TestLogger;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -10,7 +9,6 @@ import java.util.Properties;
 
 public class MainConfig {
 
-    private static final Logger LOGGER = LogManager.getLogger(MainConfig.class);
     private static MainConfig INSTANCE;
 
     private final Properties properties;
@@ -23,9 +21,9 @@ public class MainConfig {
 
         try {
             properties.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
-            LOGGER.trace("Loaded config.properties file. Found {} properties.", properties.size());
+            TestLogger.trace("Loaded config.properties file. Found {} properties.", properties.size());
         } catch (IOException e) {
-            LOGGER.fatal("Could not load config.properties file.", e);
+            TestLogger.error("Could not load config.properties file.");
             throw new RuntimeException(e);
         }
 
@@ -35,7 +33,7 @@ public class MainConfig {
     public static MainConfig getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MainConfig();
-            LOGGER.trace("Created a new instance for MainConfig.");
+            TestLogger.trace("Created a new instance for MainConfig.");
         }
         return INSTANCE;
     }
