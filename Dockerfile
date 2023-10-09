@@ -1,0 +1,3 @@
+FROM amazoncorretto:17-alpine3.18-jdk
+
+WORKDIR /app
