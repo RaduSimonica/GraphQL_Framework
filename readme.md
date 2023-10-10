@@ -16,7 +16,7 @@ Uses Allure reporter to generate reports.
 - Open a terminal in the root dir of the repository
 - Build an image from Dockerfile with this command: `docker build -t graphql_framework`
 - Run a test-suite with this command: 
-`docker run -it -v ${pwd}:/app graphql_framework sh gradlew test test -PsuiteName="SUITE_FILE_NAME.xml"`
+`docker run -it -v ${pwd}:/app graphql_framework sh gradlew graphql_framework test -PsuiteName="SUITE_FILE_NAME.xml"`
   - All the available suites can be found here: `src/test/java/suites`
   - Recommended suite: `regression_suite.xml`
   - Make sure to include `.xml` file extension
