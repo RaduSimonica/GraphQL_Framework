@@ -2,7 +2,8 @@ package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -14,7 +15,10 @@ public class TestCreateSkillEmptyName extends BaseClass {
     public void testCreateSkillEmptyName() {
         String skillname = "";
         GraphQLResponse response = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillname)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillname)
+                        .asJson()
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
         TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());

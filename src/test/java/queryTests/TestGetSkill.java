@@ -2,7 +2,8 @@ package queryTests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillFindOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -13,7 +14,12 @@ public class TestGetSkill extends BaseClass {
     @Test
     public void testGetSingleSkill() {
         Skill expectedSkill = testData.getTestSkills().get(0);
-        GraphQLResponse graphQLResponse = client.sendRequest(Query.SKILL_FIND_ONE.getQuery(expectedSkill.getId()));
+        GraphQLResponse graphQLResponse = client.sendRequest(
+                RequestFactory.builder()
+                        .operation(new SkillFindOne())
+                        .withArgs(expectedSkill.getId())
+                        .asJson()
+        );
         Skill actualSkill = responseProcessor.assertAndReturn(graphQLResponse, Skill.class);
         TestLogger.info("Got skill named: {}", actualSkill.getName());
 

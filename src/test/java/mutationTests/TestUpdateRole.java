@@ -2,8 +2,10 @@ package mutationTests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
+import ro.crownstudio.api.factory.operations.RoleFindOne;
+import ro.crownstudio.api.factory.operations.RoleUpdateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
@@ -21,19 +23,28 @@ public class TestUpdateRole extends BaseClass {
         String updatedRoleName = "Updated Test Role " + UUID.randomUUID();
 
         GraphQLResponse createdRoleResponse = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
         TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());
 
         GraphQLResponse updatedRoleResponse = client.sendRequest(
-                Mutation.ROLE_UPDATE_ONE.getQuery(createdRole.getId(), updatedRoleName)
+                RequestFactory.builder()
+                        .operation(new RoleUpdateOne())
+                        .withArgs(createdRole.getId(), updatedRoleName)
+                        .asJson()
         );
         Role updatedRole = responseProcessor.assertAndReturn(updatedRoleResponse, Role.class);
         TestLogger.info("Updated role with id: {}. New name is {}", createdRole.getId(), updatedRole.getName());
 
         GraphQLResponse refreshedRoleResponse = client.sendRequest(
-                Query.ROLE_FIND_ONE.getQuery(createdRole.getId())
+                RequestFactory.builder()
+                        .operation(new RoleFindOne())
+                        .withArgs(createdRole.getId())
+                        .asJson()
         );
         Role refreshedRole = responseProcessor.assertAndReturn(refreshedRoleResponse, Role.class);
 

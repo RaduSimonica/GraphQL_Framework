@@ -2,8 +2,10 @@ package mutationTests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
+import ro.crownstudio.api.factory.operations.SkillFindOne;
+import ro.crownstudio.api.factory.operations.SkillUpdateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -21,19 +23,28 @@ public class TestUpdateSkill extends BaseClass {
         String updatedSkillname = "Updated Test Skill " + UUID.randomUUID();
 
         GraphQLResponse createdSkillResponse = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         Skill createdSkill = responseProcessor.assertAndReturn(createdSkillResponse, Skill.class);
         TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());
 
         GraphQLResponse updatedSkillResponse = client.sendRequest(
-                Mutation.SKILL_UPDATE_ONE.getQuery(createdSkill.getId(), updatedSkillname)
+                RequestFactory.builder()
+                        .operation(new SkillUpdateOne())
+                        .withArgs(createdSkill.getId(), updatedSkillname)
+                        .asJson()
         );
         Skill updatedSkill = responseProcessor.assertAndReturn(updatedSkillResponse, Skill.class);
         TestLogger.info("Updated skill id: {}. New name is: {}", createdSkill.getId(), updatedSkill.getName());
 
         GraphQLResponse refreshedSkillResponse = client.sendRequest(
-                Query.SKILL_FIND_ONE.getQuery(createdSkill.getId())
+                RequestFactory.builder()
+                        .operation(new SkillFindOne())
+                        .withArgs(createdSkill.getId())
+                        .asJson()
         );
         Skill refreshedSkill = responseProcessor.assertAndReturn(refreshedSkillResponse, Skill.class);
 

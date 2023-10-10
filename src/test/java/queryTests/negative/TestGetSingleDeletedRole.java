@@ -2,8 +2,10 @@ package queryTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
+import ro.crownstudio.api.factory.operations.RoleDeleteOne;
+import ro.crownstudio.api.factory.operations.RoleFindOne;
 import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
@@ -21,13 +23,19 @@ public class TestGetSingleDeletedRole extends BaseClass {
     public void testGetSingleDeletedRole() {
         String roleName = "Created Test Role " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(response, Role.class);
         TestLogger.info("Created role with ID: {}", createdRole.getId());
 
         GraphQLResponse deleteRoleResponse = client.sendRequest(
-                Mutation.ROLE_DELETE_ONE.getQuery(createdRole.getId())
+                RequestFactory.builder()
+                        .operation(new RoleDeleteOne())
+                        .withArgs(createdRole.getId())
+                        .asJson()
         );
         DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteRoleResponse, DeleteResult.class);
         TestLogger.info(
@@ -38,7 +46,10 @@ public class TestGetSingleDeletedRole extends BaseClass {
         Assert.assertEquals(deleteResult.getAffected(), 1);
 
         GraphQLResponse getResponse = client.sendRequest(
-                Query.ROLE_FIND_ONE.getQuery(createdRole.getId())
+                RequestFactory.builder()
+                        .operation(new RoleFindOne())
+                        .withArgs(createdRole.getId())
+                        .asJson()
         );
 
         Role roleAfterDeletion = responseProcessor.assertAndReturn(getResponse, Role.class);

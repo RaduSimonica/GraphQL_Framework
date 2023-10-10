@@ -1,7 +1,8 @@
 package queryTests;
 
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.Skills;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -17,7 +18,11 @@ public class TestGetAllSkills extends BaseClass {
 
     @Test
     public void testGetAllSkills() {
-        GraphQLResponse graphQLResponse = client.sendRequest(Query.SKILLS.getQuery());
+        GraphQLResponse graphQLResponse = client.sendRequest(
+                RequestFactory.builder()
+                        .operation(new Skills())
+                        .asJson()
+        );
         List<Skill> actualSkills = Arrays.asList(responseProcessor.assertAndReturn(graphQLResponse, Skill[].class));
         TestLogger.info("Got {} skills", actualSkills.size());
 

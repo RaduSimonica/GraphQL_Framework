@@ -2,7 +2,8 @@ package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
@@ -18,7 +19,10 @@ public class TestCreateRoleSpecialCharName extends BaseClass {
     public void testCreateRoleSpecialCharName() {
         String roleName = "ЊѼҊ߮ " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(response, Role.class);
         TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());

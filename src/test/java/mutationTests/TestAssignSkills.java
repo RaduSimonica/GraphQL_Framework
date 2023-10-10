@@ -3,7 +3,9 @@ package mutationTests;
 import org.apache.logging.log4j.Level;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
+import ro.crownstudio.api.factory.operations.RoleSkillsOverwrite;
 import ro.crownstudio.api.pojo.*;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -37,7 +39,10 @@ public class TestAssignSkills extends BaseClass {
 
         String roleName = "Created Test Role " + UUID.randomUUID();
         GraphQLResponse createdRoleResponse = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
         TestLogger.log(
@@ -54,7 +59,10 @@ public class TestAssignSkills extends BaseClass {
         TestLogger.log(Level.INFO, "Created ASD object. Wights and ids: {}", roleSkillsAssigned);
 
         GraphQLResponse assignResponse = client.sendRequest(
-                Mutation.ROLE_SKILLS_OVERWRITE.getQuery(createdRole.getId(), roleSkillsAssigned)
+                RequestFactory.builder()
+                        .operation(new RoleSkillsOverwrite())
+                        .withArgs(createdRole.getId(), roleSkillsAssigned)
+                        .asJson()
         );
         List<RoleSkill> actualRoleSkills = Arrays.asList(
                 responseProcessor.assertAndReturn(assignResponse, RoleSkill[].class)

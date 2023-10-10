@@ -2,8 +2,10 @@ package queryTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
+import ro.crownstudio.api.factory.operations.SkillDeleteOne;
+import ro.crownstudio.api.factory.operations.SkillFindOne;
 import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
@@ -21,13 +23,19 @@ public class TestGetSingleDeletedSkill extends BaseClass {
     public void testgetSingleDeletedSkill() {
         String skillName = "Created Test Skill " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
         TestLogger.info("Created Skill with id: {}", createdSkill.getId());
 
         GraphQLResponse deleteSkillResponse = client.sendRequest(
-                Mutation.SKILL_DELETE_ONE.getQuery(createdSkill.getId())
+                RequestFactory.builder()
+                        .operation(new SkillDeleteOne())
+                        .withArgs(createdSkill.getId())
+                        .asJson()
         );
         DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteSkillResponse, DeleteResult.class);
         TestLogger.info(
@@ -38,7 +46,10 @@ public class TestGetSingleDeletedSkill extends BaseClass {
         Assert.assertEquals(deleteResult.getAffected(), 1);
 
         GraphQLResponse getResponse = client.sendRequest(
-                Query.SKILL_FIND_ONE.getQuery(createdSkill.getId())
+                RequestFactory.builder()
+                        .operation(new SkillFindOne())
+                        .withArgs(createdSkill.getId())
+                        .asJson()
         );
 
         Skill skillAfterDeletion = responseProcessor.assertAndReturn(getResponse, Skill.class);

@@ -1,8 +1,11 @@
 package ro.crownstudio.core;
 
 import org.testng.Assert;
-import ro.crownstudio.api.actions.Mutation;
-import ro.crownstudio.api.actions.Query;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
+import ro.crownstudio.api.factory.operations.RoleFindOne;
+import ro.crownstudio.api.factory.operations.RoleSkillsOverwrite;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.pojo.Asd;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
@@ -24,14 +27,20 @@ public class TestDataHelper {
 
     public Role createTestRole(String roleName) {
         GraphQLResponse response = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         return responseProcessor.assertAndReturn(response, Role.class);
     }
 
     public Skill createTestSkill(String skillName) {
         GraphQLResponse response = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         return responseProcessor.assertAndReturn(response, Skill.class);
     }
@@ -63,7 +72,10 @@ public class TestDataHelper {
                 roleSkills.add(new Asd(weight, skill.getId()));
             }
             GraphQLResponse response = client.sendRequest(
-                    Mutation.ROLE_SKILLS_OVERWRITE.getQuery(role.getId(), roleSkills)
+                    RequestFactory.builder()
+                            .operation(new RoleSkillsOverwrite())
+                            .withArgs(role.getId(), roleSkills)
+                            .asJson()
             );
             Assert.assertNull(response.getError(), "Cannot assign skills to role");
         }
@@ -74,7 +86,10 @@ public class TestDataHelper {
         List<Role> refreshedRoles = new ArrayList<>();
         for (Role role : roles) {
             GraphQLResponse response = client.sendRequest(
-                    Query.ROLE_FIND_ONE.getQuery(role.getId())
+                    RequestFactory.builder()
+                            .operation(new RoleFindOne())
+                            .withArgs(role.getId())
+                            .asJson()
             );
             refreshedRoles.add(responseProcessor.assertAndReturn(response, Role.class));
         }

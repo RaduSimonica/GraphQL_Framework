@@ -2,7 +2,8 @@ package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
@@ -16,7 +17,10 @@ public class TestCreateDuplicateRole extends BaseClass {
     public void testCreateDuplicateRole() {
         String roleName = "Test Role " + UUID.randomUUID();
         GraphQLResponse response1 = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(response1, Role.class);
         TestLogger.info(
@@ -31,7 +35,10 @@ public class TestCreateDuplicateRole extends BaseClass {
         );
         // Create the same role again
         GraphQLResponse response2 = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         TestLogger.info("Tried to get the same role again");
 

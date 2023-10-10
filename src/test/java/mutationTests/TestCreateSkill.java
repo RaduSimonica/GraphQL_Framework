@@ -2,7 +2,8 @@ package mutationTests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -18,7 +19,10 @@ public class TestCreateSkill extends BaseClass {
     public void testCreateSkill() {
         String skillName = "Created Test Skill " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
         TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());

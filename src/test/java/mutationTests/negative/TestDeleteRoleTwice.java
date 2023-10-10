@@ -2,7 +2,9 @@ package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.RoleCreateOne;
+import ro.crownstudio.api.factory.operations.RoleDeleteOne;
 import ro.crownstudio.api.pojo.DeleteResult;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
@@ -17,13 +19,19 @@ public class TestDeleteRoleTwice extends BaseClass {
     public void testDeleteRole() {
         String roleName = "Created Test Role " + UUID.randomUUID();
         GraphQLResponse response = client.sendRequest(
-                Mutation.ROLE_CREATE_ONE.getQuery(roleName)
+                RequestFactory.builder()
+                        .operation(new RoleCreateOne())
+                        .withArgs(roleName)
+                        .asJson()
         );
         Role createdRole = responseProcessor.assertAndReturn(response, Role.class);
         TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());
 
         GraphQLResponse deleteRoleResponse = client.sendRequest(
-                Mutation.ROLE_DELETE_ONE.getQuery(createdRole.getId())
+                RequestFactory.builder()
+                        .operation(new RoleDeleteOne())
+                        .withArgs(createdRole.getId())
+                        .asJson()
         );
         DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteRoleResponse, DeleteResult.class);
         TestLogger.info(
@@ -39,7 +47,10 @@ public class TestDeleteRoleTwice extends BaseClass {
         );
 
         GraphQLResponse deleteRoleSecondResponse = client.sendRequest(
-                Mutation.ROLE_DELETE_ONE.getQuery(createdRole.getId())
+                RequestFactory.builder()
+                        .operation(new RoleDeleteOne())
+                        .withArgs(createdRole.getId())
+                        .asJson()
         );
         DeleteResult deleteSecondResult = responseProcessor.assertAndReturn(
                 deleteRoleSecondResponse,

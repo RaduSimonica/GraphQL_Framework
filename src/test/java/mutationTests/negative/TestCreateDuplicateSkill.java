@@ -2,7 +2,8 @@ package mutationTests.negative;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ro.crownstudio.api.actions.Mutation;
+import ro.crownstudio.api.factory.RequestFactory;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
@@ -16,7 +17,10 @@ public class TestCreateDuplicateSkill extends BaseClass {
     public void testCreateDuplicateSKill() {
         String skillName = "Test Skill " + UUID.randomUUID();
         GraphQLResponse response1 = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         Skill createdSkill = responseProcessor.assertAndReturn(response1, Skill.class);
         TestLogger.info(
@@ -32,7 +36,10 @@ public class TestCreateDuplicateSkill extends BaseClass {
 
         // Create the same role again
         GraphQLResponse response2 = client.sendRequest(
-                Mutation.SKILL_CREATE_ONE.getQuery(skillName)
+                RequestFactory.builder()
+                        .operation(new SkillCreateOne())
+                        .withArgs(skillName)
+                        .asJson()
         );
         TestLogger.info("Tried to create the same skill again.");
 
