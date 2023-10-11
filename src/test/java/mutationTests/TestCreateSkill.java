@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.factory.RequestFactory;
 import ro.crownstudio.api.factory.operations.SkillCreateOne;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -18,13 +17,14 @@ public class TestCreateSkill extends BaseClass {
     @Test
     public void testCreateSkill() {
         String skillName = "Created Test Skill " + UUID.randomUUID();
-        GraphQLResponse response = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillCreateOne())
-                        .withArgs(skillName)
-                        .asJson()
-        );
-        Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
+        Skill createdSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillCreateOne.getInstance())
+                .withArgs(skillName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());
 
         Assert.assertTrue(

@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import ro.crownstudio.api.factory.RequestFactory;
 import ro.crownstudio.api.factory.operations.RoleCreateOne;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -18,13 +17,14 @@ public class TestCreateRoleSpecialCharName extends BaseClass {
     @Test
     public void testCreateRoleSpecialCharName() {
         String roleName = "ЊѼҊ߮ " + UUID.randomUUID();
-        GraphQLResponse response = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleCreateOne())
-                        .withArgs(roleName)
-                        .asJson()
-        );
-        Role createdRole = responseProcessor.assertAndReturn(response, Role.class);
+        Role createdRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleCreateOne.getInstance())
+                .withArgs(roleName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());
 
         Assert.assertTrue(

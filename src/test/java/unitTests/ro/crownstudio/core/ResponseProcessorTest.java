@@ -69,4 +69,68 @@ public class ResponseProcessorTest extends BaseUnitTestClass {
 
         Assert.assertThrows(AssertionError.class,() -> responseProcessor.assertAndReturn(response, Role.class));
     }
+
+    @Test
+    public void testAssertAndReturnRoleNoErrorNoData() {
+        GraphQLResponse response = gson.fromJson(
+                """
+                        {
+                          "data": null,
+                          "errors": null
+                        }
+                        """,
+                GraphQLResponse.class
+        );
+
+        Assert.assertThrows(AssertionError.class,() -> responseProcessor.assertAndReturn(response, Role.class));
+    }
+
+    @Test
+    public void testGetResponseObject() {
+        GraphQLResponse response = gson.fromJson(
+                """
+                        {
+                          "data": {
+                            "RoleCreateOne": {
+                              "id": 100,
+                              "name": "name"
+                            }
+                          }
+                        }
+                        """,
+                GraphQLResponse.class
+        );
+
+        Role role = responseProcessor.getResponseObject(response, Role.class);
+
+        Assert.assertEquals(role.getId(), 100);
+        Assert.assertEquals(role.getName(), "name");
+    }
+
+    @Test
+    public void testGetResponseObjectWithError() {
+        GraphQLResponse response = gson.fromJson(
+                """
+                        {
+                          "data": null,
+                          "errors": [
+                            {
+                              "message": "error",
+                              "locations": [
+                                {
+                                  "line": 2,
+                                  "column": 23
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        """,
+                GraphQLResponse.class
+        );
+
+        Role role = responseProcessor.getResponseObject(response, Role.class);
+
+        Assert.assertNull(role);
+    }
 }

@@ -7,7 +7,6 @@ import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.factory.operations.SkillDeleteOne;
 import ro.crownstudio.api.factory.operations.SkillFindOne;
 import ro.crownstudio.api.pojo.DeleteResult;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -22,22 +21,24 @@ public class TestGetSingleDeletedSkill extends BaseClass {
     @Test
     public void testgetSingleDeletedSkill() {
         String skillName = "Created Test Skill " + UUID.randomUUID();
-        GraphQLResponse response = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillCreateOne())
-                        .withArgs(skillName)
-                        .asJson()
-        );
-        Skill createdSkill = responseProcessor.assertAndReturn(response, Skill.class);
+        Skill createdSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillCreateOne.getInstance())
+                .withArgs(skillName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Created Skill with id: {}", createdSkill.getId());
 
-        GraphQLResponse deleteSkillResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillDeleteOne())
-                        .withArgs(createdSkill.getId())
-                        .asJson()
-        );
-        DeleteResult deleteResult = responseProcessor.assertAndReturn(deleteSkillResponse, DeleteResult.class);
+        DeleteResult deleteResult = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillDeleteOne.getInstance())
+                .withArgs(createdSkill.getId())
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info(
                 "Deleted Skill with id: {}. Entities affected: {}",
                 createdSkill.getId(),
@@ -45,14 +46,14 @@ public class TestGetSingleDeletedSkill extends BaseClass {
         );
         Assert.assertEquals(deleteResult.getAffected(), 1);
 
-        GraphQLResponse getResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillFindOne())
-                        .withArgs(createdSkill.getId())
-                        .asJson()
-        );
+        Skill skillAfterDeletion = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillFindOne.getInstance())
+                .withArgs(createdSkill.getId())
+                .assertError()
+                .getResponseObject();
 
-        Skill skillAfterDeletion = responseProcessor.assertAndReturn(getResponse, Skill.class);
         TestLogger.info(
                 "Tried to get deleted skill with id: {}. Result is: {}",
                 createdSkill.getId(),

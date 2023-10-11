@@ -16,13 +16,14 @@ public class TestCreateDuplicateSkill extends BaseClass {
     @Test
     public void testCreateDuplicateSKill() {
         String skillName = "Test Skill " + UUID.randomUUID();
-        GraphQLResponse response1 = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillCreateOne())
-                        .withArgs(skillName)
-                        .asJson()
-        );
-        Skill createdSkill = responseProcessor.assertAndReturn(response1, Skill.class);
+        Skill createdSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillCreateOne.getInstance())
+                .withArgs(skillName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info(
                 "Created skill named {} with id: {}",
                 createdSkill.getName(),
@@ -35,12 +36,11 @@ public class TestCreateDuplicateSkill extends BaseClass {
         );
 
         // Create the same role again
-        GraphQLResponse response2 = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillCreateOne())
-                        .withArgs(skillName)
-                        .asJson()
-        );
+        GraphQLResponse response2 = RequestFactory.builder()
+                .apiClient(client)
+                .operation(SkillCreateOne.getInstance())
+                .withArgs(skillName)
+                .sendRequest();
         TestLogger.info("Tried to create the same skill again.");
 
         Assert.assertNotNull(

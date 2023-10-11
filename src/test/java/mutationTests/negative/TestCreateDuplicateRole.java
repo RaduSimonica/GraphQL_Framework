@@ -16,13 +16,15 @@ public class TestCreateDuplicateRole extends BaseClass {
     @Test
     public void testCreateDuplicateRole() {
         String roleName = "Test Role " + UUID.randomUUID();
-        GraphQLResponse response1 = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleCreateOne())
-                        .withArgs(roleName)
-                        .asJson()
-        );
-        Role createdRole = responseProcessor.assertAndReturn(response1, Role.class);
+
+        Role createdRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleCreateOne.getInstance())
+                .withArgs(roleName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info(
                 "Created role named {} with id: {}",
                 createdRole.getName(),
@@ -34,12 +36,11 @@ public class TestCreateDuplicateRole extends BaseClass {
                 "1st role could not be created"
         );
         // Create the same role again
-        GraphQLResponse response2 = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleCreateOne())
-                        .withArgs(roleName)
-                        .asJson()
-        );
+        GraphQLResponse response2 = RequestFactory.builder()
+                .apiClient(client)
+                .operation(RoleCreateOne.getInstance())
+                .withArgs(roleName)
+                .sendRequest();
         TestLogger.info("Tried to get the same role again");
 
         Assert.assertNotNull(

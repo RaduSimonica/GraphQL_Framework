@@ -6,7 +6,6 @@ import ro.crownstudio.api.factory.RequestFactory;
 import ro.crownstudio.api.factory.operations.RoleCreateOne;
 import ro.crownstudio.api.factory.operations.RoleFindOne;
 import ro.crownstudio.api.factory.operations.RoleUpdateOne;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Role;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -22,31 +21,33 @@ public class TestUpdateRole extends BaseClass {
         String roleName = "Created Test Role " + UUID.randomUUID();
         String updatedRoleName = "Updated Test Role " + UUID.randomUUID();
 
-        GraphQLResponse createdRoleResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleCreateOne())
-                        .withArgs(roleName)
-                        .asJson()
-        );
-        Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
+        Role createdRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleCreateOne.getInstance())
+                .withArgs(roleName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Created role named: {} with id: {}", createdRole.getName(), createdRole.getId());
 
-        GraphQLResponse updatedRoleResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleUpdateOne())
-                        .withArgs(createdRole.getId(), updatedRoleName)
-                        .asJson()
-        );
-        Role updatedRole = responseProcessor.assertAndReturn(updatedRoleResponse, Role.class);
+        Role updatedRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleUpdateOne.getInstance())
+                .withArgs(createdRole.getId(), updatedRoleName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Updated role with id: {}. New name is {}", createdRole.getId(), updatedRole.getName());
 
-        GraphQLResponse refreshedRoleResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleFindOne())
-                        .withArgs(createdRole.getId())
-                        .asJson()
-        );
-        Role refreshedRole = responseProcessor.assertAndReturn(refreshedRoleResponse, Role.class);
+        Role refreshedRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleFindOne.getInstance())
+                .withArgs(createdRole.getId())
+                .assertError()
+                .getResponseObject();
 
         Assert.assertEquals(
                 updatedRole.getCreatedAt(),

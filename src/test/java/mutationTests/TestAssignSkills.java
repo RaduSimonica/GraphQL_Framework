@@ -6,14 +6,17 @@ import org.testng.annotations.Test;
 import ro.crownstudio.api.factory.RequestFactory;
 import ro.crownstudio.api.factory.operations.RoleCreateOne;
 import ro.crownstudio.api.factory.operations.RoleSkillsOverwrite;
-import ro.crownstudio.api.pojo.*;
+import ro.crownstudio.api.factory.operations.SkillCreateOne;
+import ro.crownstudio.api.pojo.Asd;
+import ro.crownstudio.api.pojo.Role;
+import ro.crownstudio.api.pojo.RoleSkill;
+import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +31,15 @@ public class TestAssignSkills extends BaseClass {
         while (testData.getTestSkills().size() < SKILLS_TO_ASSIGN) {
             TestLogger.log(Level.DEBUG, "Added one more skill.");
             testData.getTestSkills()
-                    .add(testData.getHelper().createTestSkill("Test Skill " + UUID.randomUUID()));
+                    .add(
+                            RequestFactory.builder()
+                                    .apiClient(client)
+                                    .responseProcessor(responseProcessor)
+                                    .operation(SkillCreateOne.getInstance())
+                                    .withArgs("Test Skill " + UUID.randomUUID())
+                                    .assertError()
+                                    .getResponseObject()
+                    );
         }
 
         List<Skill> assignedSkills = testData.getTestSkills()
@@ -38,13 +49,14 @@ public class TestAssignSkills extends BaseClass {
         TestLogger.log(Level.DEBUG, "Created a list of {} assigned skills", assignedSkills.size());
 
         String roleName = "Created Test Role " + UUID.randomUUID();
-        GraphQLResponse createdRoleResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleCreateOne())
-                        .withArgs(roleName)
-                        .asJson()
-        );
-        Role createdRole = responseProcessor.assertAndReturn(createdRoleResponse, Role.class);
+        Role createdRole = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(RoleCreateOne.getInstance())
+                .withArgs(roleName)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.log(
                 Level.INFO,
                 "Created role named: {} with id: {}",
@@ -58,16 +70,19 @@ public class TestAssignSkills extends BaseClass {
         roleSkillsAssigned.add(new Asd(0.2f, assignedSkills.get(2).getId()));
         TestLogger.log(Level.INFO, "Created ASD object. Wights and ids: {}", roleSkillsAssigned);
 
-        GraphQLResponse assignResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new RoleSkillsOverwrite())
+        RoleSkill[] actualRoleSkills = RequestFactory.builder()
+                        .apiClient(client)
+                        .responseProcessor(responseProcessor)
+                        .operation(RoleSkillsOverwrite.getInstance())
                         .withArgs(createdRole.getId(), roleSkillsAssigned)
-                        .asJson()
+                        .assertError()
+                        .getResponseObject();
+        TestLogger.log(
+                Level.INFO,
+                "Assigned {} skills to role id: {}",
+                actualRoleSkills.length,
+                createdRole.getId()
         );
-        List<RoleSkill> actualRoleSkills = Arrays.asList(
-                responseProcessor.assertAndReturn(assignResponse, RoleSkill[].class)
-        );
-        TestLogger.log(Level.INFO, "Assigned {} skills to role id: {}", actualRoleSkills.size(), createdRole.getId());
 
         for (RoleSkill roleSkill : actualRoleSkills) {
             TestLogger.log(Level.INFO, "Checking role skill: {}", roleSkill.getSkillId());

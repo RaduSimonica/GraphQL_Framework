@@ -6,7 +6,6 @@ import ro.crownstudio.api.factory.RequestFactory;
 import ro.crownstudio.api.factory.operations.SkillCreateOne;
 import ro.crownstudio.api.factory.operations.SkillFindOne;
 import ro.crownstudio.api.factory.operations.SkillUpdateOne;
-import ro.crownstudio.api.pojo.GraphQLResponse;
 import ro.crownstudio.api.pojo.Skill;
 import ro.crownstudio.core.BaseClass;
 import ro.crownstudio.core.TestLogger;
@@ -22,31 +21,32 @@ public class TestUpdateSkill extends BaseClass {
         String skillName = "Created Test Skill " + UUID.randomUUID();
         String updatedSkillname = "Updated Test Skill " + UUID.randomUUID();
 
-        GraphQLResponse createdSkillResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillCreateOne())
-                        .withArgs(skillName)
-                        .asJson()
-        );
-        Skill createdSkill = responseProcessor.assertAndReturn(createdSkillResponse, Skill.class);
+        Skill createdSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillCreateOne.getInstance())
+                .withArgs(skillName)
+                .getResponseObject();
+
         TestLogger.info("Created skill named: {} with id: {}", createdSkill.getName(), createdSkill.getId());
 
-        GraphQLResponse updatedSkillResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillUpdateOne())
-                        .withArgs(createdSkill.getId(), updatedSkillname)
-                        .asJson()
-        );
-        Skill updatedSkill = responseProcessor.assertAndReturn(updatedSkillResponse, Skill.class);
+        Skill updatedSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillUpdateOne.getInstance())
+                .withArgs(createdSkill.getId(), updatedSkillname)
+                .assertError()
+                .getResponseObject();
+
         TestLogger.info("Updated skill id: {}. New name is: {}", createdSkill.getId(), updatedSkill.getName());
 
-        GraphQLResponse refreshedSkillResponse = client.sendRequest(
-                RequestFactory.builder()
-                        .operation(new SkillFindOne())
-                        .withArgs(createdSkill.getId())
-                        .asJson()
-        );
-        Skill refreshedSkill = responseProcessor.assertAndReturn(refreshedSkillResponse, Skill.class);
+        Skill refreshedSkill = RequestFactory.builder()
+                .apiClient(client)
+                .responseProcessor(responseProcessor)
+                .operation(SkillFindOne.getInstance())
+                .withArgs(createdSkill.getId())
+                .assertError()
+                .getResponseObject();
 
         Assert.assertEquals(
                 updatedSkill.getCreatedAt(),

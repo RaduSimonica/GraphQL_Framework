@@ -3,6 +3,8 @@
     <test name="Unit Tests">
         <packages>
             <package name="unitTests.ro.crownstudio.core"/>
+            <package name="unitTests.ro.crownstudio.api.factory"/>
+            <package name="unitTests.ro.crownstudio.api.factory.operations"/>
         </packages>
     </test>
 </suite>
