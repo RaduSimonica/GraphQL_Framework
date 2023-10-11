@@ -7,14 +7,14 @@ Uses Allure reporter to generate reports.
 
 - Git
 - Docker (or Rancher)
-- IntelliJ (optional, any other IDE works, or even the terminal)
+- IntelliJ (optional. Any other IDE works, or the terminal)
 - Java 17+ (optional)
 
 ### How to run the framework:
 - Clone this repository locally in any directory using Git or IntelliJ
 - Open Docker (or Rancher)
 - Open a terminal in the root dir of the repository
-- Build an image from Dockerfile with this command: `docker build -t graphql_framework`
+- Build an image from Dockerfile with this command: `docker build -t graphql_framework .`
 - Run a test-suite with this command: 
 `docker run -it -v ${pwd}:/app graphql_framework sh gradlew test -PsuiteName="SUITE_FILE_NAME.xml"`
   - All the available suites can be found here: `src/test/java/suites`
