@@ -1,4 +1,4 @@
-name: Run full regression
+name: Run Unit Tests
 
 on:
   push:
@@ -10,10 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v4
 
-    - name: Run full regression
-      run: |
-        docker build -t graphql_framework -f Dockerfile_github_actions .
-        docker run -v $PWD:/app graphql_framework sh gradlew test -PsuiteName="regression_suite.xml"
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run unit tests
+        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
+        with:
+          arguments: test -PunitTest
