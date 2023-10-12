@@ -15,5 +15,5 @@ jobs:
 
       - name: Build and Run Docker Container
         run: |
-          docker build -t my-docker-image -f Dockerfile_github_actions .
-          docker run -it -v $PWD:/app my-docker-image sh -c "gradlew test -PunitTest"
+          docker build -t graphql_framework -f Dockerfile_github_actions .
+          docker run graphql_framework sh -c "gradlew test -PunitTest"
