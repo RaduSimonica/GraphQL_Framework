@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker run -it -v $PWD:/app graphql-framework:1.0.0 sh -c "gradlew test -PsuiteName=regression_suite.xml"
+      run: docker run -v $PWD:/app graphql-framework:1.0.0 sh -c "gradlew test -PsuiteName=regression_suite.xml"
