@@ -1,0 +1,19 @@
+name: Run full regression
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Run full regression
+      run: |
+        docker build -t graphql_framework .
+        docker run -v $PWD:/app graphql_framework sh -c "gradlew test -PsuiteName=regression_suite.xml"
