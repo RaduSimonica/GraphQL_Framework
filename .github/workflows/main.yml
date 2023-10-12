@@ -2,9 +2,9 @@ name: Run image
 
 on:
   push:
-    branches: [ "Actions_test" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "Actions_test" ]
+    branches: [ "main" ]
 
 jobs:
 
