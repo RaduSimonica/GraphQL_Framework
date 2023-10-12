@@ -2,9 +2,9 @@ name: Build Docker image
 
 on:
   push:
-    branches: [ "Actions_test" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "Actions_test" ]
+    branches: [ "main" ]
 
 jobs:
 
@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag graphql-framework:$(date +%s)
+      run: docker build . --file Dockerfile --tag graphql-framework:1.0.0
