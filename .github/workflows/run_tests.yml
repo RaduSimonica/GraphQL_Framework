@@ -16,4 +16,4 @@ jobs:
     - name: Run full regression
       run: |
         docker build -t graphql_framework .
-        docker run -v $PWD:/app graphql_framework sh -c "gradlew test -PsuiteName=regression_suite.xml"
+        docker run -v $PWD:/app graphql_framework sh gradlew test -PsuiteName="regression_suite.xml"
