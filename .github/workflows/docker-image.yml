@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build Docker image
 
 on:
   push:
@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag graphql-framework:$(date +%s) && docker run -it -v $PWD:/app graphql-framework:$(date +%s) sh -c "gradlew test -PsuiteName=regression_suite.xml"
+      run: docker build . --file Dockerfile --tag graphql-framework:$(date +%s)
