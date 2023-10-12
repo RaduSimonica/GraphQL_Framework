@@ -22,4 +22,4 @@ jobs:
       - name: Run unit tests
         uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
         with:
-          arguments: test -PunitTest
+          arguments: ./gradlew test -PunitTest
